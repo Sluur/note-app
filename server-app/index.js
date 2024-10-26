@@ -106,7 +106,7 @@ app.post("/login", async (req, res) => {
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: "3600m",
     });
-
+    //dev 1 109
     return res.json({
       error: false,
       message: "Usuario ingresado con exito",
@@ -120,11 +120,9 @@ app.post("/login", async (req, res) => {
     });
   }
 });
-
+//blabla
 //Añadir Nota
-app.post("/add-note", authenticateToken, async (req, res) => {
-    
-})
+app.post("/add-note", authenticateToken, async (req, res) => {});
 
 app.listen(8000);
 
