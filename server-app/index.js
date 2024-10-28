@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 mongoose.connect(config.connectionString);
 
 const User = require("./models/user.model");
+const Note = require("./models/note.model");
 
 const express = require("express");
 const cors = require("cors");
@@ -122,7 +123,31 @@ app.post("/login", async (req, res) => {
 });
 
 //Añadir Nota
-app.post("/add-note", authenticateToken, async (req, res) => {});
+app.post("/add-note", authenticateToken, async (req, res) => {
+  const { title, content, tags } = req.body;
+  const { user } = req.user;
+
+  if (!content) {
+    return res.status(400).json({ error: "El contenido es requerido." });
+  }
+
+  try {
+    const note = new Note({
+      title,
+      content,
+      tags: tags || [],
+      userId: user._id,
+    });
+
+    await note.save();
+
+    return res
+      .status(200)
+      .json({ error: false, note, message: "Nota creada con exitó" });
+  } catch (error) {
+    return res.status(500).json({ error: true, message: "Error interno" });
+  }
+});
 
 app.listen(8000);
 
