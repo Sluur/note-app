@@ -1,12 +1,15 @@
 import { useState } from "react";
 import PasswordInput from "../../components/Input/PasswordInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
     password: Yup.string().required("Por favor ingrese una contraseña."),
@@ -21,7 +24,37 @@ const Login = () => {
     try {
       await validationSchema.validate({ email, password });
       setError("");
-      // SIGN UP API CALL
+
+      try {
+        const response = await axiosInstance.post("/login", {
+          email,
+          password,
+        });
+        if (response.data && response.data.accessToken) {
+          console.log("Logueado");
+          localStorage.setItem("token", response.data.accessToken);
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.log("Error en el login:", error); // Nuevo log para depuración
+
+        if (error.response) {
+          console.log("Response completa:", error.response); // Muestra toda la respuesta
+
+          if (error.response.data && error.response.data.message) {
+            console.log("No Logueado");
+            setError(error.response.data.message);
+          } else {
+            console.log("No llegó al mensaje de error esperado");
+            setError(
+              "Un error inesperado ocurrió. Por favor intente de nuevo."
+            );
+          }
+        } else {
+          console.log("Error de red o sin respuesta del servidor");
+          setError("No se pudo conectar con el servidor.");
+        }
+      }
     } catch (err) {
       setError(err.message);
     }

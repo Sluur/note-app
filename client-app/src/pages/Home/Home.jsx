@@ -9,7 +9,10 @@ const Home = () => {
     isShown: false,
     type: "add",
     data: null,
+
   });
+
+  
 
   return (
     <>
