@@ -1,14 +1,17 @@
 import { useState } from "react";
 import PasswordInput from "./../../components/Input/PasswordInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import * as Yup from "yup";
+import axiosInstance from "./../../utils/axiosInstance";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
     password: Yup.string().required("Por favor ingrese una contraseña."),
@@ -25,7 +28,33 @@ const SignUp = () => {
     try {
       await validationSchema.validate({ password, email, name });
       setError("");
-      // SIGN UP API CALL
+      try {
+        const response = await axiosInstance.post("/create-account", {
+          fullName: name,
+          email: email,
+          password: password,
+        });
+        if (response.data && response.data.error) {
+          setError(response.data.message);
+          return;
+        }
+        if (response.data && response.data.accessToken) {
+          localStorage.setItem("token", response.data.accessToken);
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        if (error.response) {
+          if (error.response.data && error.response.data.message) {
+            setError(error.response.data.message);
+          } else {
+            setError(
+              "Un error inesperado ocurrió. Por favor intente de nuevo."
+            );
+          }
+        } else {
+          setError("No se pudo conectar con el servidor.");
+        }
+      }
     } catch (err) {
       setError(err.message);
     }
