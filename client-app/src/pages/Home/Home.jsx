@@ -6,12 +6,19 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Navbar from "./../../components/Navbar/Navbar";
+import Toast from "../../components/ToastMessage/Toast";
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
     data: null,
+  });
+
+  const [showToastMsg, setShowToastMsg] = useState({
+    inShown: false,
+    message: "",
+    type: "add",
   });
 
   const [userInfo, setUserInfo] = useState(null);
@@ -21,6 +28,20 @@ const Home = () => {
 
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
+  };
+
+  const showToastMessage = (message, type) => {
+    setShowToastMsg({
+      isShown: true,
+      message,
+      type,
+    });
+  };
+  const handleCloseToast = () => {
+    setShowToastMsg({
+      isShown: false,
+      message: "",
+    });
   };
 
   //Obtener info usuario
@@ -50,6 +71,22 @@ const Home = () => {
       console.log("ocurrio un error" + error);
     }
   };
+  //Eliminar nota
+  const deleteNote = async (data) => {
+    const noteId = data._id;
+    try {
+      const response = await axiosInstance.delete("/delete-note/" + noteId);
+
+      if (response.data && !response.data.error) {
+        showToastMessage("Nota eliminada con éxito", "delete");
+        getAllNotes();
+      }
+    } catch (error) {
+      if (error.response && error.response.data && error.response.message) {
+        console.log("Un error inesperado ocurrio, Intente nuevamente");
+      }
+    }
+  };
 
   useEffect(() => {
     getUserInfo();
@@ -72,7 +109,7 @@ const Home = () => {
               onEdit={() => {
                 handleEdit(item);
               }}
-              onDelete={() => {}}
+              onDelete={() => deleteNote(item)}
               onPinNote={() => {}}
               key={item._id}
             />
@@ -107,8 +144,16 @@ const Home = () => {
             setOpenAddEditModal({ isShown: false, type: "add", data: null });
           }}
           getAllNotes={getAllNotes}
+          showToastMessage={showToastMessage}
         />
       </Modal>
+
+      <Toast
+        isShown={showToastMsg.isShown}
+        message={showToastMsg.message}
+        type={showToastMsg.type}
+        onClose={handleCloseToast}
+      />
     </>
   );
 };

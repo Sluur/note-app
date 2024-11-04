@@ -5,7 +5,13 @@ import { MdClose } from "react-icons/md";
 import * as Yup from "yup";
 import axiosInstance from "../../utils/axiosInstance";
 
-const AddEditNotes = ({ noteData, type, getAllNotes, onClose }) => {
+const AddEditNotes = ({
+  noteData,
+  type,
+  getAllNotes,
+  onClose,
+  showToastMessage,
+}) => {
   const [title, setTitle] = useState(noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags || "");
@@ -21,6 +27,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose }) => {
       });
 
       if (response.data && response.data.note) {
+        showToastMessage("Nota añadida con éxito");
         getAllNotes();
         onClose();
       }
@@ -40,6 +47,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose }) => {
       });
 
       if (response.data && response.data.note) {
+        showToastMessage("Nota editada con éxito");
         getAllNotes();
         onClose();
       }
@@ -50,6 +58,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose }) => {
     }
   };
 
+  
   const validationSchema = Yup.object().shape({
     content: Yup.string().required("Por favor ingrese un contenido."),
     title: Yup.string().required("Por favor ingrese un titulo."),
