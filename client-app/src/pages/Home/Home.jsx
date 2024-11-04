@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Navbar from "./../../components/Navbar/Navbar";
 import Toast from "../../components/ToastMessage/Toast";
+import EmptyCard from "./../../components/EmptyCard/EmptyCard";
+import AddNotesImg from "../../assets/images/add-notes.svg";
+import NoDataImg from "../../assets/images/no-data.svg";
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -23,6 +26,8 @@ const Home = () => {
 
   const [userInfo, setUserInfo] = useState(null);
   const [allNotes, setAllNotes] = useState([]);
+
+  const [isSearch, setIsSearch] = useState(false);
 
   const navigate = useNavigate();
 
@@ -87,6 +92,40 @@ const Home = () => {
       }
     }
   };
+  //Buscar una nota
+  const onSearchNote = async (query) => {
+    try {
+      const response = await axiosInstance.get("/search-notes", {
+        params: { query },
+      });
+      if (response.data && response.data.notes) {
+        setIsSearch(true);
+        setAllNotes(response.data.notes);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Pinnear nota
+  const updateIsPinned = async (noteData) => {
+    const noteId = noteData._id;
+    try {
+      const response = await axiosInstance.put("/update-note-pinned/" + noteId);
+
+      if (response.data && response.data.note) {
+        showToastMessage("Nota marcada con éxito");
+        getAllNotes();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setIsSearch(false);
+    getAllNotes();
+  };
 
   useEffect(() => {
     getUserInfo();
@@ -96,25 +135,41 @@ const Home = () => {
 
   return (
     <>
-      <Navbar userInfo={userInfo} />
+      <Navbar
+        userInfo={userInfo}
+        onSearchNote={onSearchNote}
+        handleClearSearch={handleClearSearch}
+      />
+
       <div className="container mx-auto">
-        <div className="grid grid-cols-3 gap-4 mt-8">
-          {allNotes.map((item) => (
-            <NoteCard
-              title={item.title}
-              date={item.createdOn}
-              content={item.content}
-              tags={item.tags}
-              isPinned={item.isPinned}
-              onEdit={() => {
-                handleEdit(item);
-              }}
-              onDelete={() => deleteNote(item)}
-              onPinNote={() => {}}
-              key={item._id}
-            />
-          ))}
-        </div>
+        {allNotes.length > 0 ? (
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            {allNotes.map((item) => (
+              <NoteCard
+                title={item.title}
+                date={item.createdOn}
+                content={item.content}
+                tags={item.tags}
+                isPinned={item.isPinned}
+                onEdit={() => {
+                  handleEdit(item);
+                }}
+                onDelete={() => deleteNote(item)}
+                onPinNote={() => updateIsPinned(item)}
+                key={item._id}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyCard
+            imgSrc={isSearch ? NoDataImg : AddNotesImg}
+            message={
+              isSearch
+                ? "Oops! Nota no encontrada"
+                : "Empieza creando tu primer nota! Presiona el boton '+'"
+            }
+          />
+        )}
       </div>
 
       <button

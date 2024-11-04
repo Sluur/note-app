@@ -11,7 +11,7 @@ const NoteCard = ({
   isPinned,
   onEdit,
   onDelete,
-  //onPinNote,
+  onPinNote,
 }) => {
   return (
     <div className="border rounded p-4 bg-white hover:shadow-xl transition-all ease-in-out">
@@ -23,6 +23,7 @@ const NoteCard = ({
 
         <MdOutlinePushPin
           className={`icon-btn ${isPinned ? "text-primary" : "text-slate-300"}`}
+          onClick={onPinNote}
         />
       </div>
       <p className="text-xs text-slate-600 mt-2">{content?.slice(0, 60)}</p>
