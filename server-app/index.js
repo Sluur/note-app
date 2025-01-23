@@ -1,10 +1,21 @@
 require("dotenv").config();
 
-const config = require("./config.json");
 const mongoose = require("mongoose");
 
-mongoose.connect(config.connectionString);
+const MONGO_URI = process.env.MONGO_URI;
 
+if (!MONGO_URI) {
+  console.error(
+    "Error: MONGO_URI no está definida en las variables de entorno."
+  );
+  process.exit(1); // Detener la ejecución del servidor
+}
+
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Conectado a MongoDB"))
+  .catch((err) => console.error("Error conectando a MongoDB:", err));
+  
 const User = require("./models/user.model");
 const Note = require("./models/note.model");
 
