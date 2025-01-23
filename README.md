@@ -48,11 +48,13 @@
 
 ---
 
-Contacto 📧
+
+
+Contacto 📧 
 Si tienes alguna pregunta o sugerencia, no dudes en contactarme:
 
-Contacto 📧 Si tienes alguna pregunta o sugerencia, no dudes en contactarme:
-
 GitHub: Sluur 
+
 Linkedin: https://www.linkedin.com/in/rodrigoleonelharo/
+
 Email: rodrigo.l.haro@gmail.com
