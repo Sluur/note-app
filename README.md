@@ -20,19 +20,6 @@
 
 ---
 
-## Capturas de pantalla 🖼️
-
-### Página principal
-![Home Page](https://via.placeholder.com/800x400.png?text=Home+Page)
-
-### Crear una nota
-![Create Note](https://via.placeholder.com/800x400.png?text=Create+Note)
-
-### Editar una nota
-![Edit Note](https://via.placeholder.com/800x400.png?text=Edit+Note)
-
----
-
 ## Tecnologías utilizadas 🛠️
 
 - **Frontend**: 
